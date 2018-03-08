@@ -1,14 +1,14 @@
-#Simple Tetris Clone
+# Simple Tetris Clone
 
 ---
 
-##Preview:
+## Preview:
 
 ![preview](preview.png)
 
 ---
 
-##TODO:
+## TODO:
 
 * add gameover logic
 * line clear graphic effect
@@ -17,7 +17,7 @@
 
 ---
 
-##Credits:
+## Credits:
 
 sounds https://github.com/nickarora/tetris
 font http://www.fontspace.com/profile/heavencastro
