@@ -1,4 +1,4 @@
-# Simple Tetris Clone
+# Tetris Clone
 
 ---
 
@@ -11,9 +11,6 @@
 ## TODO:
 
 * add gameover logic
-* line clear graphic effect
-* debug
-* improve design, at least a little
 
 ---
 

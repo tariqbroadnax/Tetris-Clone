@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
@@ -75,31 +76,31 @@ public class UI
 		c.gridx = 0; c.gridy = 0;
 		c.gridwidth = 1; c.gridheight = 4;
 		c.fill = c.BOTH;
-		c.weightx = 0.7; c.weighty = 1; 
+		c.weightx = 1; c.weighty = 1; 
 		cont.add(gridPane, c);
 		
 		c.gridx = 1; c.gridy = 0;
 		c.gridwidth = 1; c.gridheight = 1;
 		c.fill = c.BOTH;
-		c.weightx = 0.4; c.weighty = 1; 
+		c.weightx = 0.2; c.weighty = 1; 
 		cont.add(nextPane, c);
 		
 		c.gridx = 1; c.gridy = 1;
 		c.gridwidth = 1; c.gridheight = 1;
 		c.fill = c.BOTH;
-		c.weightx = 0.4; c.weighty = 1; 
+		c.weightx = 0.2; c.weighty = 1; 
 		cont.add(scorePane, c);
 		
 		c.gridx = 1; c.gridy = 2;
 		c.gridwidth = 1; c.gridheight = 1;
 		c.fill = c.BOTH;
-		c.weightx = 0.4; c.weighty = 1;
+		c.weightx = 0.2; c.weighty = 1;
 		cont.add(bestPane, c);
 		
 		c.gridx = 1; c.gridy = 3;
 		c.gridwidth = 1; c.gridheight = 1;
 		c.fill = c.BOTH;
-		c.weightx = 0.4; c.weighty = 1;
+		c.weightx = 0.2; c.weighty = 1;
 		cont.add(timePane, c);
 	
 		cont.setIgnoreRepaint(true);
@@ -117,8 +118,10 @@ public class UI
 		try {
 		     GraphicsEnvironment ge = 
 		         GraphicsEnvironment.getLocalGraphicsEnvironment();
+
 		     ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, new File("CHMCPixel.ttf")));
 		} catch (IOException|FontFormatException e) {
+			e.printStackTrace();
 		}
 	}
 	
@@ -270,6 +273,8 @@ public class UI
 		{
 			nextLabel = new JLabel("NEXT", SwingConstants.CENTER);
 			
+			nextLabel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+			
 			nextPiecePanel = new JPanel() 
 			{
 				public void paintComponent(Graphics g)
@@ -278,14 +283,14 @@ public class UI
 					
 					Dimension size = getSize();
 					
-					double x = size.getWidth()/2 - Tetris.COL_WIDTH/2,
-						   y = size.getHeight()/2 - Tetris.ROW_HEIGHT/2;
+					double x = size.getWidth()/2 - Tetris.COL_WIDTH,
+						   y = size.getHeight()/2 - Tetris.ROW_HEIGHT;
 					
 					piece.paint(g, (int) x, (int) y);
 				}
 			};
 			
-			nextLabel.setFont(new Font("CHMCPixel", Font.BOLD, 30));
+			nextLabel.setFont(new Font("CHMC Pixel", Font.BOLD, 20));
 			nextLabel.setForeground(Color.white);
 			
 			setBackground(new Color(0, 31, 73));
@@ -314,12 +319,13 @@ public class UI
 				}
 			};
 			
-			titleLabel.setFont(new Font("CHMCPixel", Font.BOLD, 30));
+			titleLabel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+			titleLabel.setFont(new Font("CHMC Pixel", Font.BOLD, 20));
 			titleLabel.setForeground(Color.white);
 			titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
 			titleLabel.setVerticalAlignment(SwingConstants.CENTER);
 			
-			scoreLabel.setFont(new Font("CHMCPixel", Font.BOLD, 30));
+			scoreLabel.setFont(new Font("CHMC Pixel", Font.BOLD, 40));
 			scoreLabel.setForeground(Color.white);
 			scoreLabel.setHorizontalAlignment(SwingConstants.CENTER);
 			scoreLabel.setVerticalAlignment(SwingConstants.CENTER);
@@ -352,12 +358,13 @@ public class UI
 				}
 			};
 			
-			titleLabel.setFont(new Font("CHMCPixel", Font.BOLD, 30));
+			titleLabel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+			titleLabel.setFont(new Font("CHMC Pixel", Font.BOLD, 20));
 			titleLabel.setForeground(Color.white);
 			titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
 			titleLabel.setVerticalAlignment(SwingConstants.CENTER);
 			
-			scoreLabel.setFont(new Font("CHMCPixel", Font.BOLD, 30));
+			scoreLabel.setFont(new Font("CHMC Pixel", Font.BOLD, 40));
 			scoreLabel.setForeground(Color.white);
 			scoreLabel.setHorizontalAlignment(SwingConstants.CENTER);
 			scoreLabel.setVerticalAlignment(SwingConstants.CENTER);
@@ -397,13 +404,14 @@ public class UI
 					return str;
 				}
 			};
-			
-			titleLabel.setFont(new Font("CHMCPixel", Font.BOLD, 30));
+
+			titleLabel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+			titleLabel.setFont(new Font("CHMC Pixel", Font.BOLD, 20));
 			titleLabel.setForeground(Color.white);
 			titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
 			titleLabel.setVerticalAlignment(SwingConstants.CENTER);
 			
-			timeLabel.setFont(new Font("CHMCPixel", Font.BOLD, 30));
+			timeLabel.setFont(new Font("CHMC Pixel", Font.BOLD, 40));
 			timeLabel.setForeground(Color.white);
 			timeLabel.setHorizontalAlignment(SwingConstants.CENTER);
 			timeLabel.setVerticalAlignment(SwingConstants.CENTER);

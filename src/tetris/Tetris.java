@@ -1,7 +1,12 @@
 package tetris;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.Random;
+
+import javax.imageio.ImageIO;
 
 public class Tetris 
 {
@@ -13,9 +18,15 @@ public class Tetris
 	public static final int SCENE_WIDTH = COLS * COL_WIDTH, 
 							SCENE_HEIGHT = ROWS * ROW_HEIGHT;
 	
-	private static final double NORMAL_MOVE_DELAY = 0.1,
-								SOFT_MOVE_DELAY = 0.05;
+	private static final double NORMAL_MOVE_DELAY = 0.60,
+								SOFT_MOVE_DELAY = 0.30;
 
+	private static final int NO_FILLED_ROW = -1;
+	
+	private static final double REMOVE_ROW_PERIOD = 0.25;
+	
+	private BufferedImage pieceImg;
+	
 	private Updater updater;
 	
 	private UI ui;
@@ -29,6 +40,8 @@ public class Tetris
 	private DropMode dropMode;
 	
 	public enum DropMode {NORMAL, SOFT}
+	
+	private int filledRowStart, filledRowEnd;
 	
 	private int score, bestScore;
 	
@@ -46,6 +59,15 @@ public class Tetris
 	
 		currPiece = randomPiece();
 		nextPiece = randomPiece();
+		
+		filledRowStart = filledRowEnd = NO_FILLED_ROW;
+		
+		try {
+			pieceImg = ImageIO.read(new File("tetrominoes.png"));
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
 	}
 	
 	private Piece randomPiece()
@@ -88,46 +110,79 @@ public class Tetris
 		
 		elapsed += dt;
 		
-		double moveDelay = dropMode == DropMode.NORMAL ? 
-						   NORMAL_MOVE_DELAY : SOFT_MOVE_DELAY;
-						
-		if(elapsed > moveDelay)
+		if(filledRowStart == NO_FILLED_ROW)
 		{
-			elapsed = 0;
-			
-			currPiece.moveDown();
-			
-			if(currPiece.collides())
+			double moveDelay = dropMode == DropMode.NORMAL ? 
+					   NORMAL_MOVE_DELAY : SOFT_MOVE_DELAY;
+					
+			if(elapsed > moveDelay)
 			{
-				if(dropMode == DropMode.NORMAL)
-					Audio.play("sounds/slow-hit.wav", false);
-				else
-					Audio.play("sounds/force-hit.wav", false);
+				elapsed = 0;
 				
-				currPiece.moveUp();
-				currPiece.split();
+				currPiece.moveDown();
 				
-				currPiece = nextPiece;
-				
-				nextPiece = randomPiece();
-				
-				int rowsRemoved = 0;
-				
-				for(int row = 1; row < ROWS; row++)
+				if(currPiece.collides())
 				{
-					if(filledRow(row))
+					if(dropMode == DropMode.NORMAL)
+						Audio.play("sounds/slow-hit.wav", false);
+					else
+						Audio.play("sounds/force-hit.wav", false);
+					
+					currPiece.moveUp();
+					currPiece.split();
+					
+					currPiece = nextPiece;
+					
+					nextPiece = randomPiece();
+					
+					int rowsRemoved = 0;
+					
+					for(int row = 1; row < ROWS; row++)
 					{
-						rowsRemoved++;
-						
-						dropRow(row);
-						row--;
+						if(filledRow(row))
+						{
+							rowsRemoved++;
+							
+							if(filledRowStart == NO_FILLED_ROW)
+								filledRowStart = row;
+							
+							filledRowEnd = row;
+						}
 					}
+					
+					if(rowsRemoved == 4)
+						Audio.play("sounds/line-removal4.wav", false);
+					else if(rowsRemoved > 0)
+						Audio.play("sounds/line-remove.wav", false);
 				}
+			}
+		}
+		else
+		{
+			int c2 = COLS / 2;
+		
+			for(int row = filledRowStart; row <= filledRowEnd; row++)
+			{
+				for(int col = 0; col < COLS; col++)
+				{
+					if(elapsed > (c2 - Math.abs(col - c2)) * REMOVE_ROW_PERIOD / c2)
+						grid[row][col] = null;
+				}
+			}
+			
+			if(elapsed > REMOVE_ROW_PERIOD)
+			{
+				elapsed = 0;
 				
-				if(rowsRemoved == 4)
-					Audio.play("sounds/line-removal4.wav", false);
-				else if(rowsRemoved > 0)
-					Audio.play("sounds/line-remove.wav", false);
+				for(int i = 0; i < filledRowEnd - filledRowStart + 1; i++)
+					dropRow(filledRowStart);
+				
+				filledRowStart = filledRowEnd = NO_FILLED_ROW;
+			
+				score += 100 * (filledRowEnd - filledRowStart + 1);
+				
+				if(bestScore < score)
+					bestScore = score;
 			}
 		}
 	}
@@ -209,9 +264,11 @@ public class Tetris
 			if(filledRow(row))
 			{
 				rowsRemoved++;
+
+				if(filledRowStart == NO_FILLED_ROW)
+					filledRowStart = row;
 				
-				dropRow(row);
-				row--;
+				filledRowEnd = row;
 			}
 		}
 		
@@ -282,7 +339,7 @@ public class Tetris
 		private Color color;
 		
 		public Square() {
-			color = Color.GRAY;
+			color = Color.RED;
 		}
 		
 		public Square(Color color) {
@@ -291,13 +348,33 @@ public class Tetris
 		
 		public void paintComponent(Graphics g, int x, int y)
 		{
-			g.setColor(color);
+			int imgx = 0;
 			
-			g.fillRect(x, y, COL_WIDTH, ROW_HEIGHT);
+			if(color == Color.CYAN)
+				imgx = 0;
+			else if(color == Color.YELLOW)
+				imgx = 20;
+			else if(color == Color.MAGENTA)
+				imgx = 40;
+			else if(color == Color.GREEN)
+				imgx = 60;
+			else if(color == Color.RED)
+				imgx = 80;
+			else if(color == Color.BLUE)
+				imgx = 100;
+			else if(color == Color.ORANGE)
+				imgx = 120;
+			else
+			{
+				g.setColor(color);
+				
+				g.fillRect(x, y, COL_WIDTH, ROW_HEIGHT);
 			
-			g.setColor(Color.GRAY);
+				return;
+			}
 			
-			g.drawRect(x + 3, y + 3, COL_WIDTH - 6, ROW_HEIGHT - 6);
+			g.drawImage(pieceImg, x, y, x + 20, y + 20, 
+								  imgx, 0, imgx + 20, 20, null);
 		}
 	}
 	
